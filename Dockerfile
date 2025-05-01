@@ -15,6 +15,7 @@ RUN apt-get update && \
     ca-certificates \
     gnupg \
     lsb-release \
+    nginx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,9 +29,16 @@ RUN echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cl
 # 安装cloudflared
 RUN apt-get update && apt-get install -y cloudflared
 
+# 配置Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY index.html /usr/share/nginx/html/index.html
+
 # 创建启动脚本
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
+# 暴露80端口
+EXPOSE 80
 
 # 设置容器启动命令
 CMD ["/start.sh"]
